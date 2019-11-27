@@ -1,0 +1,40 @@
+---
+title: "Frozen2 review sentiment analysis"
+author: "Kejing Li"
+date: "11/26/2019"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+# Set global options
+# Hide all codes, messages and warnings
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+# Set figure options for better display                      
+                      fig.width = 6,
+                      fig.asp = 0.618,
+                      fig.align = "center",
+                      out.width = "70%",
+                      out.height = "70%")
+#load required packages
+library(tidyverse)
+library(tm)
+
+#set default theme and modify the font size
+theme_set(theme_bw(base_size = 13))
+```
+
+```{r convert, include = FALSE}
+all_reviews <- read.csv(here("data","reviews.csv"))
+
+all_reviews$reviews <- all_reviews$reviews%>%
+  str_to_lower(locale = "en") %>%
+  #text processing
+  removePunctuation() %>%
+  removeNumbers()%>%
+  removeWords(stopwords("en"))
+```
+
+
