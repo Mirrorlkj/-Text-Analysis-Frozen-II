@@ -3,7 +3,7 @@ title: "Frozen2 review sentiment analysis"
 author: "Kejing Li"
 date: "11/26/2019"
 output: 
-  pdf_document:
+  github_document:
     toc: true
     toc_depth: 2
 ---
@@ -21,20 +21,95 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
 #load required packages
 library(tidyverse)
 library(tm)
+library(here)
+library(tidytext)
+library(knitr)
+library(kableExtra)
+library(scales)
 
 #set default theme and modify the font size
-theme_set(theme_bw(base_size = 13))
+theme_set(theme_bw(base_size = 11))
 ```
 
-```{r convert, include = FALSE}
+```{r text_process, include = FALSE, cache = TRUE}
 all_reviews <- read.csv(here("data","reviews.csv"))
 
 all_reviews$reviews <- all_reviews$reviews%>%
-  str_to_lower(locale = "en") %>%
+  str_to_lower(locale = "en") %>% #Converting to lowercase 
   #text processing
-  removePunctuation() %>%
-  removeNumbers()%>%
-  removeWords(stopwords("en"))
+  removePunctuation()%>% #Removing punctuation 
+  removeNumbers()%>% #Removing numbers
+  removeWords(stopwords("en"))#Removing "stopwords"
+
+#another way to remove stopwords
+all_reviews <- all_reviews %>%
+  anti_join(stop_words, by = c("reviews" = "word"))
+
+#keep only alphanumeric characters or spaces
+all_reviews$reviews <- gsub(pattern = "[^[:alnum:][:space:]]", " ", all_reviews$reviews)
+#remove the name of the film(topic)
+all_reviews$reviews <- gsub(pattern = "frozen", "", all_reviews$reviews)
 ```
 
+```{r word_count_table}
+#convert into 
+reviews_word <- all_reviews%>%
+  unnest_tokens(word, reviews)
+
+count_word <- reviews_word %>%
+  count(word, sort = TRUE)
+kable(head(count_word, 10),
+      col.names = c("Word","Number"),
+      align = "c",
+      caption = "Frozen II Review Word Count")%>%
+      add_footnote("Source: IMDb, Metacritic, Rotten tomatoes")
+
+```
+
+```{r word_count_graph}
+count_word %>%
+  filter(n > 40) %>%
+  ggplot(aes(reorder(word, n), n)) +
+  geom_col() +
+  coord_flip()+
+  labs(y = "Count",
+       x = NULL,
+       title = "The common words in Frozen II review",
+       caption = "Source: IMDb, Metacritic, Rotten tomatoes")
+
+```
+
+```{r}
+#calculate the frequency for each word in different sides 
+word_freq <- reviews_word %>%
+  count(site, word, sort = TRUE ) %>%
+  group_by(site) %>%
+  mutate(proportion = n / sum(n)) %>% 
+  select(-n)%>%
+#tidy the df for plotting afterwards
+  pivot_wider(names_from = site, values_from = proportion) %>% 
+  pivot_longer(names_to = "site", values_to = "proportion", "imdb":"metacritic")
+
+#create a value for labeling the facet levels 
+site_labs <- c("IMDB",
+             "Metacritic")
+names(site_labs) <- c("imdb","metacritic")
+
+# compare the word frequencies among 3 sites
+ggplot(word_freq, aes(x = proportion, y = rotten_tomatoes, color = abs(rotten_tomatoes
+- proportion))) +
+  geom_abline(color = "gray40", lty = 2) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  scale_color_gradient(limits = c(0, 0.01), low = "darkslategray4", high = "gray75") +
+  facet_wrap(~site, ncol = 2, labeller = labeller(site = site_labs)) +
+  theme(legend.position="none") +
+  labs(y = "Rotten Potatoes",
+       x = NULL,
+       title = "Comparing the word frequencies of three sites",
+       caption = "Source: IMDb, Metacritic, Rotten tomatoes")
+
+```
 
