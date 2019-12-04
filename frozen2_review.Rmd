@@ -1,5 +1,5 @@
 ---
-title: "Frozen2 review - sentiment analysis"
+title: "Frozen2 Review - Sentiment Analysis"
 author: "Kejing Li"
 date: "11/26/2019"
 output: 
@@ -33,6 +33,8 @@ library(knitr)
 library(kableExtra)
 library(scales)
 library(textdata)
+library(reshape2)
+library(wordcloud)
 
 #set default theme and modify the font size
 theme_set(theme_bw(base_size = 11))
@@ -178,8 +180,7 @@ reviews_word %>%
   coord_flip()
 ```
 
-### Emotional Score of different websites
-
+### Emotional Score 
 So far, we have concluded that the film has a postive theme, however, the positivity could vary across websites. By assigning different values to words using AFINN sentiment dictionary, we are able to quantify this difference as fllows. The Rotten Tomatoes score highest amongst three, suggesting its reviews are mostly positive. While the Metacritic has a lower score, though still positive. The reviews on Metacritic may not show as strong positive emotions as on the Rotten Tomatoes. IMDB is somewhere in the middle.
 
 ```{r emotional_score}
@@ -199,4 +200,20 @@ reviews_word %>%
   theme(legend.position = "none")
 ```
 
+### Word Clouds
 
+Finally, to get a more intuitive results, let's take a look at the comparison of the negative and positive words in the wordclouds. On the negative side, *grief*, *risks* and *hard* may reflect the plots of Frozen II. On the other hand, it is reasonabe to conjecture words like *bad*, *confusing* and *boring* are come from the negative reviews of the film. Similarly, *love*, *magic* and *beauty* are more likely derived from the theme Frozen II intending to get across. Words like *enjoyable*, *like* and *nice* reflect the critics' appreciation of the movies. 
+```{r wordcoulds}
+set.seed(1234)   # ensure reproducibility of the wordcloud
+
+reviews_word %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("cadetblue4", "cadetblue3"),
+                   max.words = 100)
+```
+
+# Conclusion
+
+In a nutshell, Frozen II receives positive comments from the audiences, both professionals and general publics. Still, discrepancy bewteen different websites can still be detected. Specifically, Metacritic is the most strict with the movie; critics from Rotten Tomatoes and IMDB share more similar attitudes. Ultimately, the movie succeeds in communicating a lively, delightful and hopeful mood. 

@@ -1,4 +1,4 @@
-Frozen2 review - sentiment analysis
+Frozen2 Review - Sentiment Analysis
 ================
 Kejing Li
 11/26/2019
@@ -7,12 +7,13 @@ Kejing Li
   - [Text Analysis](#text-analysis)
       - [Word Frequency](#word-frequency)
           - [All websites](#all-websites)
-          - [Across Websites](#across-websites)
+          - [Across websites](#across-websites)
       - [Sentiment Analysis](#sentiment-analysis)
           - [Binary sentiments](#binary-sentiments)
           - [Catigorical sentiments](#catigorical-sentiments)
-          - [Emotional Score of different
-            websites](#emotional-score-of-different-websites)
+          - [Emotional Score](#emotional-score)
+          - [Word Clouds](#word-clouds)
+  - [Conclusion](#conclusion)
 
 # Introduction
 
@@ -256,7 +257,7 @@ songs
 
 <img src="frozen2_review_files/figure-gfm/word_count_graph-1.png" width="70%" height="70%" style="display: block; margin: auto;" />
 
-### Across Websites
+### Across websites
 
 Next, I compared the word frequencies across the three different
 websites, as shown in the figure below.
@@ -383,7 +384,7 @@ relatively low counts.
 
 <img src="frozen2_review_files/figure-gfm/nrc-1.png" width="100%" height="100%" style="display: block; margin: auto;" />
 
-### Emotional Score of different websites
+### Emotional Score
 
 So far, we have concluded that the film has a postive theme, however,
 the positivity could vary across websites. By assigning different values
@@ -395,3 +396,25 @@ show as strong positive emotions as on the Rotten Tomatoes. IMDB is
 somewhere in the middle.
 
 <img src="frozen2_review_files/figure-gfm/emotional_score-1.png" width="70%" height="70%" style="display: block; margin: auto;" />
+
+### Word Clouds
+
+Finally, to get a more intuitive results, let’s take a look at the
+comparison of the negative and positive words in the wordclouds. On the
+negative side, *grief*, *risks* and *hard* may reflect the plots of
+Frozen II. On the other hand, it is reasonabe to conjecture words like
+*bad*, *confusing* and *boring* are come from the negative reviews of
+the film. Similarly, *love*, *magic* and *beauty* are more likely
+derived from the theme Frozen II intending to get across. Words like
+*enjoyable*, *like* and *nice* reflect the critics’ appreciation of the
+movies.
+<img src="frozen2_review_files/figure-gfm/wordcoulds-1.png" width="70%" height="70%" style="display: block; margin: auto;" />
+
+# Conclusion
+
+In a nutshell, Frozen II receives positive comments from the audiences,
+both professionals and general publics. Still, discrepancy bewteen
+different websites can still be detected. Specifically, Metacritic is
+the most strict with the movie; critics from Rotten Tomatoes and IMDB
+share more similar attitudes. Ultimately, the movie succeeds in
+communicating a lively, delightful and hopeful mood.
