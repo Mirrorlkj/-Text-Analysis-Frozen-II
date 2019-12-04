@@ -7,9 +7,9 @@ This assignment focus on the text analysis, especially the sentiment analysis of
 
 * The data is obtained by scraping([find code here](scrape.R)) three major English review websites: Rotten Tomatoes, IMDb(Internet MovieDatabase) and Metacritic. 
 
-* To enhance the reproducibility, I compiled the scraped data into a csv file and saved it into the [data file](data/review.csv).
+* To enhance the reproducibility, I compiled the scraped data into a csv file and saved it into the [data file](data).
 
-* The output can be viewed [here](frozen2_review.Rmd).
+* The output can be viewed [here](frozen2_review.md).
 
 ## Required packages
 
