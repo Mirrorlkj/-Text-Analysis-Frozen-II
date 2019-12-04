@@ -1,12 +1,18 @@
 ---
-title: "Frozen2 review sentiment analysis"
+title: "Frozen2 review - sentiment analysis"
 author: "Kejing Li"
 date: "11/26/2019"
 output: 
   github_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
 ---
+
+# Introduction 
+
+In this report, I will conduct text analysis, especially sentiment analysis on the reviews of the movie Frozen II. The review data were obtained by scraping([see code here](scrape.R)) three major English review websites:Rotten Tomatoes, IMDb(Internet MovieDatabase) and Metacritic. 
+
+I am interested in seeing the overall comment on the film as well as the differences across each movie review websites. Though the three websites all serve as movie review platforms and have certain extent of popularity, the critics of each website can be quite different: Rotten Tomatoes largely rely on the opinions of professional critics, IMDB uses a system of ratings from the general public, Metacritic only open to mainstream media such as *The Guardianand*、*New York Times* and other professional film critics.
 
 ```{r setup, include=FALSE}
 # Set global options
@@ -26,6 +32,7 @@ library(tidytext)
 library(knitr)
 library(kableExtra)
 library(scales)
+library(textdata)
 
 #set default theme and modify the font size
 theme_set(theme_bw(base_size = 11))
@@ -49,13 +56,23 @@ all_reviews <- all_reviews %>%
 all_reviews$reviews <- gsub(pattern = "[^[:alnum:][:space:]]", " ", all_reviews$reviews)
 #remove the name of the film(topic)
 all_reviews$reviews <- gsub(pattern = "frozen", "", all_reviews$reviews)
+all_reviews$reviews <- gsub(pattern = "film", "", all_reviews$reviews)
+all_reviews$reviews <- gsub(pattern = "movie", "", all_reviews$reviews)
 ```
 
+# Text Analysis
+
+##  Word Frequency
+
+### All websites
+I counted the frequency of each word in the dataset and the results are as follows. The word “ii” appears most frequently in the movie reviews. Combined with other words of high frequency like “one” and “sequel”, it is quite evident that the people judge the movie heavily rely on the fact that it is a sequel movie. There may be a tendency Frozen II is appraised good or bad against Frozen I.  Besides, “Disney” also appears in the reviews quite often, indicating the significant brand effect of Frozen II.  
+
 ```{r word_count_table}
-#convert into 
+#break the text into individual tokens
 reviews_word <- all_reviews%>%
   unnest_tokens(word, reviews)
 
+#count the word frequency
 count_word <- reviews_word %>%
   count(word, sort = TRUE)
 kable(head(count_word, 10),
@@ -67,10 +84,11 @@ kable(head(count_word, 10),
 ```
 
 ```{r word_count_graph}
+#plot the word frequency
 count_word %>%
-  filter(n > 40) %>%
+  filter(n >= 50) %>%
   ggplot(aes(reorder(word, n), n)) +
-  geom_col() +
+  geom_col(fill = "cadetblue3") +
   coord_flip()+
   labs(y = "Count",
        x = NULL,
@@ -78,6 +96,14 @@ count_word %>%
        caption = "Source: IMDb, Metacritic, Rotten tomatoes")
 
 ```
+
+### Across websites
+Next, I compared the word frequencies across the three different websites, as shown in the figure below.
+
+Words that are close to the line in these plots have similar frequencies in both sets of texts, for example, in both Rotten Tomatoes and Metacritic reviews (“original”, “movie” at the middle). Words that are far from the line are words that are found more in one set of texts than another. For example, in the Rotten Tomato-IMDB panel, words like “bad”, “love” and “fun” are found in Rotten Tomatoes reviews but not much in the IMDB, while words like “first”  are found in the IMDB texts but not the Rotten Tomatoes. In comparing Rotten Tomatoes with Metacritic, Rotten Tomatoes reviewers use words like “love” and “animation” that Metacritic critics does not.
+
+Overall, notice in the following figure that the words extend to lower frequencies in the Rotten Tomatoes-IMDB panel than in the Rotten Tomatoes-Metacritic panel; there is empty space in the Rotten Tomatoes-IMDB panel at low frequency. These characteristics indicate that Rotten Tomatoes and the IMDB critics use more similar words than Rotten Tomatoes and Metacritic. Also, we see that not all the words are found in all three websites of reviews and there are fewer data points in the panel for Rotten Tomatoes and Metacritic.
+
 
 ```{r}
 #calculate the frequency for each word in different sides 
@@ -103,7 +129,7 @@ ggplot(word_freq, aes(x = proportion, y = rotten_tomatoes, color = abs(rotten_to
   geom_text(aes(label = word), check_overlap = TRUE, vjust = 1) +
   scale_x_log10(labels = percent_format()) +
   scale_y_log10(labels = percent_format()) +
-  scale_color_gradient(limits = c(0, 0.01), low = "darkslategray4", high = "gray75") +
+  scale_color_gradient(limits = c(0, 0.01), low = "cadetblue3", high = "gray75") +
   facet_wrap(~site, ncol = 2, labeller = labeller(site = site_labs)) +
   theme(legend.position="none") +
   labs(y = "Rotten Potatoes",
@@ -112,4 +138,65 @@ ggplot(word_freq, aes(x = proportion, y = rotten_tomatoes, color = abs(rotten_to
        caption = "Source: IMDb, Metacritic, Rotten tomatoes")
 
 ```
+
+
+## Sentiment Analysis 
+
+### Binary sentiments
+
+By conducting a binary sentiment analysis, we can see from the table that the positive words outnumber the negative ones. Generally speaking, reviewers tend to give positive comments on the movie.
+```{r bing}
+reviews_word %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE)%>%
+  group_by(sentiment) %>%
+  count()%>%
+  kable(col.names = c("Sentiment","Number"),
+      align = "c",
+      caption = "Binary sentiment of Frozen II Review")%>%
+      add_footnote("Source: IMDb, Metacritic, Rotten tomatoes")
+```
+
+### Catigorical sentiments
+
+The above graph depicts the top 10 words contributing to each sentiment seperately. The categorical word counts reveal that **anticipation**, **joy** and **positive** are dominant sentiments of the Frozen II, this finding is consistent with the binary sentiment analysis, which jointly explain that the film has a deightful and positive theme. In contrast, negative sentiments such as anger, disgust, fear and sadness have relatively low counts. 
+
+```{r nrc, fig.width = 10, out.width = "100%", out.height = "100%"}
+reviews_word %>%
+  inner_join(get_sentiments("nrc")) %>%
+  count(word, sentiment, sort = TRUE)%>%
+  group_by(sentiment) %>%
+  top_n(10) %>%
+  ggplot(aes(reorder(word, n), n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free", ncol = 5) +
+  labs(title = "Categorical sentiments of Frozen II Review",
+       subtitle = "NRC sentiment dictionary",
+       y = "Sentiments",
+       x = NULL,
+       caption = "Source: IMDb, Metacritic, Rotten tomatoes") +
+  coord_flip()
+```
+
+### Emotional Score of different websites
+
+So far, we have concluded that the film has a postive theme, however, the positivity could vary across websites. By assigning different values to words using AFINN sentiment dictionary, we are able to quantify this difference as fllows. The Rotten Tomatoes score highest amongst three, suggesting its reviews are mostly positive. While the Metacritic has a lower score, though still positive. The reviews on Metacritic may not show as strong positive emotions as on the Rotten Tomatoes. IMDB is somewhere in the middle.
+
+```{r emotional_score}
+reviews_word %>% 
+  inner_join(get_sentiments("afinn")) %>%
+  group_by(site) %>%
+  summarize(value = sum(value)) %>%
+  ggplot(aes(site, value)) +
+  geom_col(fill = "cadetblue3") +
+  geom_text(aes(label = value, vjust = 0))+
+  scale_x_discrete(labels = c("IMDB", "Metacritic", "Rotten tomatoes"))+
+  labs(title = "Emotional Score of Frozen II",
+       subtitle = "AFINN sentiment dictionary",
+       x = "Websites",
+       y = "Emotional Score",
+       caption = "Source: IMDb, Metacritic, Rotten tomatoes") +
+  theme(legend.position = "none")
+```
+
 
