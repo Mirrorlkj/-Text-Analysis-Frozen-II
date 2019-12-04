@@ -3,19 +3,19 @@ Frozen2 Review - Sentiment Analysis
 Kejing Li
 11/26/2019
 
-  - [Introduction](#introduction)
-  - [Text Analysis](#text-analysis)
-      - [Word Frequency](#word-frequency)
+  - [1.Introduction](#introduction)
+  - [2.Text Analysis](#text-analysis)
+      - [2.1 Word Frequency](#word-frequency)
           - [All websites](#all-websites)
           - [Across websites](#across-websites)
-      - [Sentiment Analysis](#sentiment-analysis)
+      - [2.2 Sentiment Analysis](#sentiment-analysis)
           - [Binary sentiments](#binary-sentiments)
-          - [Catigorical sentiments](#catigorical-sentiments)
+          - [Categorical sentiments](#categorical-sentiments)
           - [Emotional Score](#emotional-score)
           - [Word Clouds](#word-clouds)
-  - [Conclusion](#conclusion)
+  - [3. Conclusion](#conclusion)
 
-# Introduction
+# 1.Introduction
 
 In this report, I will conduct text analysis, especially sentiment
 analysis on the reviews of the movie Frozen II. The review data were
@@ -32,9 +32,9 @@ a system of ratings from the general public, Metacritic only open to
 mainstream media such as *The Guardianand*、*New York Times* and other
 professional film critics.
 
-# Text Analysis
+# 2.Text Analysis
 
-## Word Frequency
+## 2.1 Word Frequency
 
 ### All websites
 
@@ -284,7 +284,7 @@ in the panel for Rotten Tomatoes and Metacritic.
 
 <img src="frozen2_review_files/figure-gfm/unnamed-chunk-1-1.png" width="70%" height="70%" style="display: block; margin: auto;" />
 
-## Sentiment Analysis
+## 2.2 Sentiment Analysis
 
 ### Binary sentiments
 
@@ -372,7 +372,7 @@ positive
 
 </table>
 
-### Catigorical sentiments
+### Categorical sentiments
 
 The above graph depicts the top 10 words contributing to each sentiment
 seperately. The categorical word counts reveal that **anticipation**,
@@ -410,7 +410,7 @@ derived from the theme Frozen II intending to get across. Words like
 movies.
 <img src="frozen2_review_files/figure-gfm/wordcoulds-1.png" width="70%" height="70%" style="display: block; margin: auto;" />
 
-# Conclusion
+# 3\. Conclusion
 
 In a nutshell, Frozen II receives positive comments from the audiences,
 both professionals and general publics. Still, discrepancy bewteen
