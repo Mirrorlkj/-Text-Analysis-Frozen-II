@@ -1,9 +1,9 @@
 
-# hw09 Kejing Li
+# Text Analysis: FrozenII
 
 ## Introduction
 
-This assignment focus on the text analysis, especially the sentiment analysis of the Disney film Frozen II. 
+This repo focus on the text analysis, especially the sentiment analysis of the Disney film Frozen II. 
 
 * The data is obtained by scraping([find code here](scrape.R)) three major English review websites: Rotten Tomatoes, IMDb(Internet MovieDatabase) and Metacritic. 
 
