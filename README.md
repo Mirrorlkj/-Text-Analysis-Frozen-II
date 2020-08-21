@@ -1,5 +1,5 @@
 
-# Text Analysis: FrozenII
+# Text Analysis: Frozen II
 
 ## Introduction
 
